@@ -4,7 +4,10 @@
 
 #include "pch.h"
 #include "Game.h"
+#include <WICTextureLoader.h>
+#include <DDSTextureLoader.h>
 #include <sstream>
+#include <CommonStates.h>
 extern void ExitGame();
 
 using namespace DirectX;
@@ -42,6 +45,31 @@ void Game::Initialize(HWND window, int width, int height)
 	m_spriteFont = std::make_unique<SpriteFont>(m_d3dDevice.Get(), L"Resources/myfile.spritefont");
 	//カウンターの初期化
 	m_count = 0;
+	//リソース情報
+	ComPtr<ID3D11Resource> resource;
+	//png用
+	DX::ThrowIfFailed(
+		CreateWICTextureFromFile(m_d3dDevice.Get(), L"Resources/cat.png",
+			resource.GetAddressOf(),
+			m_texture.ReleaseAndGetAddressOf()));
+	//dds用
+	//DX::ThrowIfFailed(
+	//	CreateDDSTextureFromFile(m_d3dDevice.Get(), L"Resources/cat.dds",
+	//		resource.GetAddressOf(),
+	//		m_texture.ReleaseAndGetAddressOf()));
+	//猫のテクスチャ
+	ComPtr<ID3D11Texture2D> cat;
+	DX::ThrowIfFailed(resource.As(&cat));
+	//テクスチャの情報
+	CD3D11_TEXTURE2D_DESC catDesc;
+	cat->GetDesc(&catDesc);	//テクスチャの縦幅、横幅を取得
+
+	//テクスチャの原点を画像の中心にする
+	m_origin.x = float(catDesc.Width / 2);	//x座標
+	m_origin.y = float(catDesc.Height / 2); //y座標
+	//表示座標を画面の中央に指定
+	m_screenPos.x = m_outputWidth / 2.f;	//x座標
+	m_screenPos.y = m_outputHeight / 2.f;	//y座標
 }
 
 // Executes the basic game loop.
@@ -87,9 +115,22 @@ void Game::Render()
     Clear();
 
     // TODO: Add your rendering code here.
-	//スプライトバッチの描画開始
-	m_spriteBatch->Begin();
-	//スプライトの描画		　スプライトバッチ　　　描画するもの　　x座標,y座標
+	CommonStates states(m_d3dDevice.Get());
+	//スプライトバッチの描画開始 デフォルトのオプション　αブレンドを変える
+	m_spriteBatch->Begin(SpriteSortMode_Deferred, states.NonPremultiplied());
+
+	//テクスチャの切り取り矩形
+	//RECT rect{ 30,30,70,70 };
+	//スプライトの描画
+	m_spriteBatch->Draw(
+		m_texture.Get(),			//テクスチャの情報 
+		m_screenPos,				//位置
+		nullptr,					//画像の切り取り(AABB)
+		Colors::White,				//色
+		XMConvertToRadians(90),		//角度(ラジアン)、角度をラジアンにする関数
+		m_origin,					//回転中心点
+		1.0f);						//大きさの倍率(指定しないとデフォルトで1.0f)
+	//スプライトフォントの描画		　スプライトバッチ　　　描画するもの　　x座標,y座標
 	m_spriteFont->DrawString(m_spriteBatch.get(), m_str.c_str(), XMFLOAT2(100, 100));
 	//スプライトバッチの描画終了
 	m_spriteBatch->End();
