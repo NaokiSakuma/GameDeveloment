@@ -70,6 +70,8 @@ void Game::Initialize(HWND window, int width, int height)
 	//表示座標を画面の中央に指定
 	m_screenPos.x = m_outputWidth / 2.f;	//x座標
 	m_screenPos.y = m_outputHeight / 2.f;	//y座標
+	//キーボードのインスタンス生成
+	m_keyboard = std::make_unique<Keyboard>();
 }
 
 // Executes the basic game loop.
@@ -101,6 +103,24 @@ void Game::Update(DX::StepTimer const& timer)
 	ss << L"aiueo" << m_count;
 	//文字列に代入
 	m_str = ss.str();
+	//キーボードの状態を取得、auto...型を自動で判別してくれる
+	auto kb = m_keyboard->GetState();
+	//キーボードトラッカーの更新
+	m_keyboardTracker.Update(kb);
+	//if (kb.Back)
+	//{
+	//	m_str = L"BackSpace";
+	//	// Backspace key is down
+	//}
+	if (m_keyboardTracker.IsKeyReleased(Keyboard::Keys::Back))
+	{
+		// Space was just pressed down
+		m_str = L"Space";
+	}
+	else
+	{
+		m_str = L"";
+	}
 }
 
 // Draws the scene.
