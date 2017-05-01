@@ -107,15 +107,19 @@ void Game::Update(DX::StepTimer const& timer)
 	auto kb = m_keyboard->GetState();
 	//キーボードトラッカーの更新
 	m_keyboardTracker.Update(kb);
-	//if (kb.Back)
-	//{
-	//	m_str = L"BackSpace";
-	//	// Backspace key is down
-	//}
-	if (m_keyboardTracker.IsKeyReleased(Keyboard::Keys::Back))
+	if (kb.Back)
+	{
+		m_str = L"BackSpace";
+		// Backspace key is down
+	}
+	else if (m_keyboardTracker.IsKeyReleased(Keyboard::Keys::A))
 	{
 		// Space was just pressed down
-		m_str = L"Space";
+		m_str = L"A";
+	}
+	else if (m_keyboardTracker.pressed.B)
+	{
+		m_str = L"B";
 	}
 	else
 	{
