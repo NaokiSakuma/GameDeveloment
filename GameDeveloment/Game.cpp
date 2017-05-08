@@ -72,6 +72,10 @@ void Game::Initialize(HWND window, int width, int height)
 	m_screenPos.y = m_outputHeight / 2.f;	//y座標
 	//キーボードのインスタンス生成
 	m_keyboard = std::make_unique<Keyboard>();
+	//マウスのインスタンス生成
+	m_mouse = std::make_unique<Mouse>();
+	//ウィンドウハンドラを通知
+	m_mouse->SetWindow(window);
 }
 
 // Executes the basic game loop.
@@ -104,7 +108,7 @@ void Game::Update(DX::StepTimer const& timer)
 	//文字列に代入
 	m_str = ss.str();
 	//キーボードの状態を取得、auto...型を自動で判別してくれる
-	auto kb = m_keyboard->GetState();
+	Keyboard::State kb = m_keyboard->GetState();
 	//キーボードトラッカーの更新
 	m_keyboardTracker.Update(kb);
 	if (kb.Back)
@@ -124,6 +128,34 @@ void Game::Update(DX::StepTimer const& timer)
 	else
 	{
 		m_str = L"";
+	}
+	//マウスの状態を取得
+	Mouse::State state = m_mouse->GetState();
+	m_tracker.Update(state);
+
+	if (m_tracker.rightButton == Mouse::ButtonStateTracker::PRESSED)
+	{
+		m_str = L"Right";
+	}
+	//if (state.leftButton)
+	//{
+	//	m_str = L"Left";
+	//}
+	//else
+	//{
+	//	m_str = L"";
+	//}
+	//XMFLOART2...Vector2のようなもの
+	XMFLOAT2 mousePosInPixels(float(state.x), float(state.y));
+	//マウスの座標に猫がついてくるように
+	m_screenPos = mousePosInPixels;
+	if (m_tracker.leftButton == Mouse::ButtonStateTracker::ButtonState::PRESSED)
+	{
+		m_mouse->SetMode(Mouse::MODE_RELATIVE);
+	}
+	else if (m_tracker.leftButton == Mouse::ButtonStateTracker::ButtonState::RELEASED)
+	{
+		m_mouse->SetMode(Mouse::MODE_ABSOLUTE);
 	}
 }
 
