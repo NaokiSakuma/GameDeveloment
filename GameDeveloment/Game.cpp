@@ -4,6 +4,8 @@
 
 #include "pch.h"
 #include "Game.h"
+#include "ADX2Le.h"
+#include "Resources\Music\Basic.h"
 #include <WICTextureLoader.h>
 #include <DDSTextureLoader.h>
 #include <sstream>
@@ -20,6 +22,12 @@ Game::Game() :
     m_outputHeight(600),
     m_featureLevel(D3D_FEATURE_LEVEL_9_1)
 {
+}
+
+Game::~Game()
+{
+	//サウンドライブラリの終了処理
+	ADX2Le::Finalize();
 }
 
 // Initialize the Direct3D resources required to run.
@@ -76,6 +84,13 @@ void Game::Initialize(HWND window, int width, int height)
 	m_mouse = std::make_unique<Mouse>();
 	//ウィンドウハンドラを通知
 	m_mouse->SetWindow(window);
+
+	//acfファイルの読み込み
+	ADX2Le::Initialize("Resources/Music/ADX2_samples.acf");
+	//ACBとAWBを読み込む
+	ADX2Le::LoadAcb("Resources/Music/CueSheet_0.acb", "Resources/Music/CueSheet_0.awb");
+	//音の再生
+	ADX2Le::Play(CRI_BASIC_MUSIC1);
 }
 
 // Executes the basic game loop.
@@ -92,6 +107,8 @@ void Game::Tick()
 // Updates the world.
 void Game::Update(DX::StepTimer const& timer)
 {
+	//サウンドライブラリの毎フレーム更新
+	ADX2Le::Update();
     float elapsedTime = float(timer.GetElapsedSeconds());
 
     // TODO: Add your game logic here.
