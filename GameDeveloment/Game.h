@@ -10,6 +10,8 @@
 #include <SimpleMath.h>
 #include <Keyboard.h>
 #include <Mouse.h>
+#include <GamePad.h>
+
 // A basic game implementation that creates a D3D11 device and
 // provides a game loop.
 class Game
@@ -87,4 +89,10 @@ private:
 	std::unique_ptr<DirectX::Mouse> m_mouse;
 	//マウストラッカー
 	DirectX::Mouse::ButtonStateTracker m_tracker;
+	//ゲームパッド
+	std::unique_ptr<DirectX::GamePad> m_gamepad;
+	//ゲームパッドトラッカー
+	DirectX::GamePad::ButtonStateTracker m_padTracker;
+	//攻撃と防御を切り替えるフラグ
+	bool m_changeFlag;
 };

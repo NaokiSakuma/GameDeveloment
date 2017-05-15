@@ -91,6 +91,11 @@ void Game::Initialize(HWND window, int width, int height)
 	ADX2Le::LoadAcb("Resources/Music/CueSheet_0.acb", "Resources/Music/CueSheet_0.awb");
 	//音の再生
 	ADX2Le::Play(CRI_BASIC_MUSIC1);
+	//ゲームパッドのインスタンス生成
+	m_gamepad = std::make_unique<GamePad>();
+	/// <summary>
+	//フラグの初期化
+	m_changeFlag = true;
 }
 
 // Executes the basic game loop.
@@ -173,6 +178,56 @@ void Game::Update(DX::StepTimer const& timer)
 	else if (m_tracker.leftButton == Mouse::ButtonStateTracker::ButtonState::RELEASED)
 	{
 		m_mouse->SetMode(Mouse::MODE_ABSOLUTE);
+	}
+
+	//ゲームパッドの状態を取得
+	DirectX::GamePad::State padstate = m_gamepad->GetState(0 , GamePad::DEAD_ZONE_CIRCULAR);
+	//ゲームパッドトラッカーの更新
+	m_padTracker.Update(padstate);
+	//コントローラーが接続されているか
+	if (padstate.IsConnected())
+	{
+		//Aボタンが押されているか
+		if (padstate.IsAPressed())
+		{
+			if (m_changeFlag)
+				//今押されている
+				m_str = L"Attack";
+			else if (!m_changeFlag)
+				m_str = L"Guard";
+		}
+		//Bボタンが押されているか
+		else if (padstate.IsBPressed())
+		{
+			if (m_changeFlag)
+				//今押されている
+				m_str = L"Guard";
+			else if (!m_changeFlag)
+				m_str = L"Attack";
+		}
+		//セレクトキーが押されているか
+		if (m_padTracker.back == GamePad::ButtonStateTracker::ButtonState::PRESSED)
+		{
+			if (m_changeFlag)
+				m_changeFlag = false;
+			else if (!m_changeFlag)
+				m_changeFlag = true;
+		}
+		//方向キーの下が押されているか
+		if (padstate.IsDPadDownPressed())
+		{
+
+		}
+		//左スティックの左右(-1～1の範囲でとれる)
+		float posx = padstate.thumbSticks.leftX;
+		//左スティックの上下
+		float posy = padstate.thumbSticks.leftY;
+		//右トリガーがどれだけ押されているか(0～１の範囲でとれる)
+		float throttle = padstate.triggers.right;
+		//振動の設定
+		//m_gamepad->SetVibration(0, 0.5f, 0.25f);
+		//デバイスの能力を取得
+		GamePad::Capabilities caps = m_gamepad->GetCapabilities(0);
 	}
 }
 
