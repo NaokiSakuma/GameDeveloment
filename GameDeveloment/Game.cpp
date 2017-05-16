@@ -93,9 +93,11 @@ void Game::Initialize(HWND window, int width, int height)
 	ADX2Le::Play(CRI_BASIC_MUSIC1);
 	//ゲームパッドのインスタンス生成
 	m_gamepad = std::make_unique<GamePad>();
-	/// <summary>
 	//フラグの初期化
 	m_changeFlag = true;
+	//ジョイパッドのインスタンス生成
+	m_joypad = std::make_unique<JoyPad>();
+	m_joypad->Initialize(window);
 }
 
 // Executes the basic game loop.

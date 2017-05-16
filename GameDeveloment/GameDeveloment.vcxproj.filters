@@ -12,12 +12,14 @@
     <ClInclude Include="StepTimer.h" />
     <ClInclude Include="ADX2Le.h" />
     <ClInclude Include="Resources\Music\Basic.h" />
+    <ClInclude Include="JoyPad.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="ADX2Le.cpp" />
+    <ClCompile Include="JoyPad.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

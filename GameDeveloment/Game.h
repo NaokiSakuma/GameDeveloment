@@ -11,7 +11,7 @@
 #include <Keyboard.h>
 #include <Mouse.h>
 #include <GamePad.h>
-
+#include "JoyPad.h"
 // A basic game implementation that creates a D3D11 device and
 // provides a game loop.
 class Game
@@ -95,4 +95,6 @@ private:
 	DirectX::GamePad::ButtonStateTracker m_padTracker;
 	//攻撃と防御を切り替えるフラグ
 	bool m_changeFlag;
+	//ジョイパッド
+	std::unique_ptr<JoyPad> m_joypad;
 };
