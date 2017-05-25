@@ -118,6 +118,8 @@ void Game::Update(DX::StepTimer const& timer)
 	ADX2Le::Update();
     float elapsedTime = float(timer.GetElapsedSeconds());
 
+	m_joypad->Update();
+	//Long m_joypad->getStickLX(0);
     // TODO: Add your game logic here.
     elapsedTime;
 
